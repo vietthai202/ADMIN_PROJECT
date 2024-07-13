@@ -9,6 +9,19 @@ userService.getAllUser = function (params) {
   })
 }
 
+userService.getCountUser = function (params) {
+  return fetch({
+    url: '/User/GetCountUser',
+    method: 'get',
+  })
+}
+userService.getUserId = function (id) {
+  return fetch({
+    url: `/User/GetAnUser?id=${id}`,
+    method: 'get',
+  })
+}
+
 
 userService.updateUser = function (dataBody) {
   return fetch({

@@ -11,21 +11,21 @@ categoryService.getAllCategory = function (params) {
 }
 categoryService.createCategory = function (formData) {
     return fetch({
-      url: '/category/create',
+      url: '/Category/AddCategory',
       method: 'post',
       data: formData
     })
   }
   categoryService.updateCategory = function (formData) {
     return fetch({
-      url: '/category/update',
+      url: '/Category/UpdateCategory',
       method: 'put',
       data: formData
     })
   }
   categoryService.deleteCategory = function (formData) {
     return fetch({
-      url: '/category/delete',
+      url: '/Category/DeleteCategory',
       method: 'post',
       data: formData
     })

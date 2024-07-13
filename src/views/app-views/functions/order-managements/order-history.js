@@ -69,6 +69,12 @@ export const VipManagement = () => {
 
     const tableColumns = [
         {
+            title: "Mã đơn hàng",
+            dataIndex: "id",
+            sorter: (a, b) => utils.antdTableSorter(a, b, "id"),
+            render: (text) => `#${text}`,
+        },
+        {
             title: "Khách hàng",
             dataIndex: "userName",
             sorter: (a, b) => utils.antdTableSorter(a, b, "userName"),

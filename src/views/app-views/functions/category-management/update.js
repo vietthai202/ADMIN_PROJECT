@@ -16,44 +16,17 @@ const rules = {
             message: 'Vui lòng nhập mô tả danh mục',
         }
     ],
-    image: [
-        {
-            required: false,
-            message: 'Vui lòng hình ảnh danh mục',
-        }
-    ],
-    ratio: [
-        {
-            required: true,
-            message: 'Vui lòng nhập giá danh mục',
-        }
-    ],
-    introduce: [
-        {
-            required: false,
-            message: 'Vui lòng nhập phần trăm giảm giá danh mục',
-        }
-    ],
-    constraint: [
-        {
-            required: false,
-            message: 'Vui lòng nhập số lượng danh mục',
-        }
-    ],
 }
 const UpdateCategory = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const categoryData = location.state.categoryData;
-    const title = "Chỉnh sửa danh mục: " + categoryData?.name
+    const title = "Chỉnh sửa danh mục: " + categoryData?.categoryName
     const [formData, setFormData] = useState({
-        uuid: categoryData?.uuid,
-        name: categoryData?.name,
+        id: categoryData?.id,
+        categoryName: categoryData?.categoryName,
         description: categoryData?.description,
-        image: categoryData?.image,
-        ratio: categoryData?.ratio,
-        introduce: categoryData?.introduce,
-        constraint: categoryData?.constraint,
+  
     });
     
     const handleChange = (name, value) => {
@@ -65,12 +38,8 @@ const UpdateCategory = () => {
     const handleSubmit = async (event) => {
         fetchData();
         setFormData({
-            name: '',
+            categoryName: '',
             description: '',
-            image: '',
-            ratio: '',
-            introduce: '',
-            constraint: '',
         });
         navigate(`/app/functions/category-management/`)
     };
@@ -87,29 +56,13 @@ const UpdateCategory = () => {
             <Col xs={24} sm={24} md={24}>
                 <Card title={title}>
                     <Form onFinish={handleSubmit}>
-                        <Form.Item label="Tên danh mục" name="name" rules={rules.name} initialValue={formData.name} >
-                            <Input placeholder="Tên danh mục" onChange={e => handleChange('name', e.target.value)} />
+                        <Form.Item label="Tên danh mục" name="name" rules={rules.name} initialValue={formData.categoryName} >
+                            <Input placeholder="Tên danh mục" onChange={e => handleChange('categoryName', e.target.value)} />
                         </Form.Item>
                         <Form.Item label="Mô tả" rules={rules.description} name="description" initialValue={formData.description} >
                             <Input.TextArea rows={4} placeholder="Mô tả" value={formData.description} onChange={e => handleChange('description', e.target.value)} />
                         </Form.Item>
-                        <Form.Item label="Hình ảnh" name="image" rules={rules.image} >
-                            <Flex gap="middle">
-                                <Upload  showUploadList={false} maxCount={1} >
-                                    <Button icon={<UploadOutlined />}>Chọn hình ảnh</Button>
-                                </Upload>
-                                <Input value={formData.image} onChange={e => handleChange('image', e.target.value)} />
-                            </Flex>
-                        </Form.Item>
-                        <Form.Item label="Tỉ lệ" rules={rules.ratio} name="ratio" initialValue={formData.ratio} >
-                            <Input placeholder="Tỉ lệ" onChange={e => handleChange('ratio', e.target.value)} />
-                        </Form.Item>
-                        <Form.Item label="Giới thiệu" rules={rules.introduce} name="introduce" initialValue={formData.introduce} >
-                            <Input placeholder="Giới thiệu" onChange={e => handleChange('introduce', e.target.value)} />
-                        </Form.Item>
-                        <Form.Item label="Hạn chế" rules={rules.constraint} name="constraint" initialValue={formData.constraint} >
-                            <Input placeholder="Hạn chế" onChange={e => handleChange('constraint', e.target.value)} />
-                        </Form.Item>
+                        
                         <Button type="primary" htmlType="submit" >Cập nhật danh mục</Button>
                     </Form>
                 </Card>

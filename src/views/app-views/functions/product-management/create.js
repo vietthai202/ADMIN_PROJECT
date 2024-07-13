@@ -84,12 +84,11 @@ const AddProduct = () => {
 
     const handleUpload = async (file) => {
         try {
-            const data = new FormData();
-            data.append('imageFile', file);
-            setFormData(prevFormData => ({
-                ...prevFormData,
-                imageFile: data,
-            }));
+
+            setFormData({
+                ...formData,
+                imageFile: file
+            });
         } catch (error) {
             message.error('Đã xảy ra lỗi khi tải lên hình ảnh: ' + error);
         }
@@ -106,11 +105,12 @@ const AddProduct = () => {
         }
     };
     const fetchDataCategory = async () => {
-        await categoryService.getAllCategory().then((data) => {
-            setCategories(data);
-        }).catch((error) => {
-            console.error("ERROR");
-        })
+        await categoryService.getAllCategory()
+            .then((data) => {
+                setCategories(data);
+            }).catch((error) => {
+                console.error("ERROR");
+            })
     }
     useEffect(() => {
         fetchDataCategory();

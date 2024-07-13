@@ -1,5 +1,5 @@
 import { Button, Table, Tag, message, Card, Input, Select, Modal } from "antd";
-import {  EditOutlined } from '@ant-design/icons';
+import { EditOutlined } from '@ant-design/icons';
 import { useEffect, useState } from "react";
 import formatDate from 'views/app-views/formatDate'
 import { useNavigate } from "react-router-dom";
@@ -81,6 +81,12 @@ export const OrderManagement = () => {
 
     const tableColumns = [
         {
+            title: "Mã đơn hàng",
+            dataIndex: "id",
+            sorter: (a, b) => utils.antdTableSorter(a, b, "id"),
+            render: (text) => `#${text}`,
+        },
+        {
             title: "Khách hàng",
             dataIndex: "userName",
             sorter: (a, b) => utils.antdTableSorter(a, b, "userId"),
@@ -152,15 +158,16 @@ export const OrderManagement = () => {
             ]);
             const order = orderData;
             const user = userData;
-            const userMap = new Map(user.map(user => [user.id, user.lastName]));
+            const userMap = new Map(user.map(user => [user.id,user.firstName + ' ' + user.lastName]));
             const updatedOrderList = order.map(order => ({
                 ...order,
-                userName: userMap.get(order.userId) || ""
+                userName: userMap.get(order.userId) || "Unknown"
             }));
             setList(updatedOrderList);
-            setLoading(false);
         } catch (error) {
             console.error("Error:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -170,13 +177,13 @@ export const OrderManagement = () => {
 
     return (
         <Card>
-            
+
             <div className="table-responsive">
                 <Table
                     columns={tableColumns}
                     dataSource={list}
                     loading={loading}
-                    
+
                 />
 
                 <Modal

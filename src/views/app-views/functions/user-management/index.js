@@ -45,7 +45,6 @@ const USER_STATUS = [
 
 export const UserManagement = () => {
   const [list, setList] = useState([]);
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [update, setUpdate] = useState(true);
   const [selectedRows, setSelectedRows] = useState([]);
@@ -59,64 +58,53 @@ export const UserManagement = () => {
   const [userUpdate, setUserUpdate] = useState();
   const [formValue, setFormValue] = useState();
 
-  const buttonUpdate = async (id, type) => {
+  const buttonUpdate = async (id) => {
     await userService.getUserId(id)
       .then((data) => {
-        console.log(data);
         setUserUpdate(data);
         setFormValue({
           email: data.email,
           phone: data.phone,
-          password: data.password,
+          password: '',
           firstName: data.firstName,
           lastName: data.lastName,
           active: data.active,
           roleId: data.roleId,
         });
-
-        if (type === 'update') {
-          setIsUpdateOpen(true);
-        }
-        else {
-          setIsUpdateBalance(true);
-        }
+        setIsUpdateOpen(true);
       });
   };
 
   const doUpdate = async () => {
-    // if (authService.isLogger()) {
-      try {
-        const values = form.getFieldsValue();
-        if (userUpdate) {
-          const newUser = userUpdate;
-          newUser.email = values.email;
-          newUser.password = values.password;
-          newUser.phone = values.phone;
-          newUser.firstName = values.firstName;
-          newUser.lastName = values.lastName;
-          newUser.active = values.active;
-          newUser.roleId = values.roleId;
-          newUser.id = newUser.id;
-          await userService.updateUser(newUser)
-            .then((data) => {
-              message.success("Cập nhật thành công!");
-              setUpdate(!update);
-            })
-            .catch((error) => {
-              message.error("Cập nhật thất bại!", error);
-            })
-            .finally(() => {
-              setIsUpdateOpen(false);
-              form.resetFields();
-            });
-        }
-      } catch (errorInfo) {
-        message.error("Có lỗi kìa!!!");
-        console.log("Form validation failed:", errorInfo);
+    try {
+      const values = form.getFieldsValue();
+      if (userUpdate) {
+        const newUser = userUpdate;
+        newUser.email = values.email;
+        newUser.password = values.password;
+        newUser.phone = values.phone;
+        newUser.firstName = values.firstName;
+        newUser.lastName = values.lastName;
+        newUser.active = values.active;
+        newUser.roleId = values.roleId;
+        newUser.id = newUser.id;
+        await userService.updateUser(newUser)
+          .then((data) => {
+            message.success("Cập nhật thành công!");
+            setUpdate(!update);
+          })
+          .catch((error) => {
+            message.error("Cập nhật thất bại!", error);
+          })
+          .finally(() => {
+            setIsUpdateOpen(false);
+            form.resetFields();
+          });
       }
-    // } else {
-    //   message.error('Hết hạn đăng nhập. Vui lòng đăng nhập lại');
-    // }
+    } catch (errorInfo) {
+      message.error("Có lỗi kìa!!!");
+      console.log("Form validation failed:", errorInfo);
+    }
   };
 
   const cancelUpdate = () => {
@@ -164,11 +152,16 @@ export const UserManagement = () => {
       sorter: (a, b) => utils.antdTableSorter(a, b, "username"),
     },
     {
+      title: "Số điện thoại",
+      dataIndex: "phone",
+      sorter: (a, b) => utils.antdTableSorter(a, b, "phone"),
+    },
+    {
       title: "Tên",
       dataIndex: "firstName",
       sorter: (a, b) => utils.antdTableSorter(a, b, "full_name"),
     },
-    
+
     {
       title: "Trạng thái tài khoản",
       dataIndex: "active",
@@ -187,7 +180,7 @@ export const UserManagement = () => {
       dataIndex: "actions",
       render: (_, record) => (
         <div>
-          <Button className="m-1" icon={<EditOutlined />} type="primary" onClick={(() => buttonUpdate(record.id, 'update'))} >Sửa</Button>
+          <Button className="m-1" icon={<EditOutlined />} type="primary" onClick={(() => buttonUpdate(record.id))} >Sửa</Button>
         </div>
       ),
     },
@@ -271,7 +264,7 @@ export const UserManagement = () => {
                 name="phone"
                 rules={[{ required: true, message: 'Hãy nhập số điện thoại' }]}
               >
-                <Input size="large"  placeholder='0123456789' />
+                <Input size="large" placeholder='0123456789' />
               </Form.Item>
 
               <Form.Item
@@ -350,12 +343,12 @@ export const UserManagement = () => {
               name="amount"
               min='0'
               rules={[
-                { 
-                  required: true, 
-                  message: 'Nhập số tiền cộng' 
+                {
+                  required: true,
+                  message: 'Nhập số tiền cộng'
                 },
                 {
-                  pattern: /^[1-9]\d*$/, 
+                  pattern: /^[1-9]\d*$/,
                   message: 'Số tiền phải lớn hơn 1'
                 }
               ]}
