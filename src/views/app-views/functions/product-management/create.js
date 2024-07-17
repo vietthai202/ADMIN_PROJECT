@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Input, Row, Col, Card, Form, InputNumber, message, Select, Button, Upload, Flex } from 'antd';
+import { Input, Row, Col, Card, Form, InputNumber, message, Select, Button, Upload, Space } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import productService from 'services/ProductService';
 import categoryService from 'services/CategoryService';
 import { useNavigate } from 'react-router-dom';
+import uploadFileToFirebase from 'services/FirebaseUpload'
 const { Option } = Select;
 const AddProduct = () => {
     const rules = {
@@ -56,7 +57,7 @@ const AddProduct = () => {
         name: '',
         description: '',
         price: '',
-        imageFile: '',
+        image: '',
         categoryId: '',
         weight: '',
         ammount: ''
@@ -75,7 +76,7 @@ const AddProduct = () => {
             name: '',
             description: '',
             price: '',
-            imageFile: '',
+            image: '',
             categoryId: '',
             weight: '',
             ammount: ''
@@ -84,11 +85,12 @@ const AddProduct = () => {
 
     const handleUpload = async (file) => {
         try {
-
+            const img = await uploadFileToFirebase(file);
             setFormData({
                 ...formData,
-                imageFile: file
+                image: img
             });
+            message.success("upload thành công");
         } catch (error) {
             message.error('Đã xảy ra lỗi khi tải lên hình ảnh: ' + error);
         }
@@ -96,7 +98,6 @@ const AddProduct = () => {
 
     const fetchData = async () => {
         try {
-            console.log(formData);
             await productService.createProduct(formData);
             message.success('Thêm sản phẩm thành công');
             navigate(`/app/functions/product-management`)
@@ -145,16 +146,13 @@ const AddProduct = () => {
                                 }
                             </Select>
                         </Form.Item>
-                        <Form.Item label="Hình ảnh sản phẩm" name="imageFile" rules={rules.image} >
-                            <Flex gap="middle">
-                                <Upload beforeUpload={handleUpload}
-                                    showUploadList={false}
-                                    maxCount={1}
-                                >
+                        <Form.Item label="Hình ảnh sản phẩm" name="imageFile" rules={rules.image}>
+                            <Space direction="horizontal" size="middle">
+                                <Upload beforeUpload={handleUpload} showUploadList={false} maxCount={1}>
                                     <Button icon={<UploadOutlined />}>Chọn hình ảnh</Button>
                                 </Upload>
-                                <Input value={formData.imageFile} onChange={e => handleChange('imageFile', e.target.value)} />
-                            </Flex>
+                                <Input value={formData.image} onChange={e => handleChange('image', e.target.value)} />
+                            </Space>
                         </Form.Item>
                         <Button type="primary" htmlType="submit" >Tạo sản phẩm</Button>
                     </Form>

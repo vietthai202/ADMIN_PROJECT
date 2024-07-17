@@ -9,17 +9,18 @@ transactionService.getAllTransaction = function () {
   })
 }
 
-transactionService.getAllOrder = function () {
+transactionService.getAllOrder = function (status) {
   return fetch({
-    url: '/Order/GetAllOrder',
+    url: `/Order/GetAllOrder/${status}`,
     method: 'get',
   })
 }
 
-transactionService.getAllOrders = function () {
+
+transactionService.UpdateOrder = function (id, status) {
   return fetch({
-    url: '/Order/GetAllOrders',
-    method: 'get',
+    url: `/Order/UpdateAOrder?id=${id}&status=${status}`,
+    method: 'post',
   })
 }
 

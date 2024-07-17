@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Input, Row, Col, Card, Form, InputNumber, message, Select, Button, Upload, Flex } from 'antd';
+import { Input, Row, Col, Card, Form, InputNumber, message, Select, Button, Upload, Space } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import productService from 'services/ProductService';
 import categoryService from 'services/CategoryService';
 import { useLocation, useNavigate } from 'react-router-dom';
+import uploadFileToFirebase from 'services/FirebaseUpload'
 const { Option } = Select;
 const rules = {
     name: [
@@ -55,7 +56,7 @@ const UpdateProduct = () => {
     const productData = location.state.productData;
     const [categories, setCategories] = useState([]);
     const title = "Chỉnh sửa sản phẩm: " + productData?.name;
-    
+
     const [formData, setFormData] = useState({
         id: productData?.id,
         name: productData?.name,
@@ -66,7 +67,7 @@ const UpdateProduct = () => {
         weight: productData?.weight,
         ammount: productData?.ammount
     });
-    
+
     const handleChange = (name, value) => {
         setFormData({
             ...formData,
@@ -96,7 +97,16 @@ const UpdateProduct = () => {
     };
 
     const handleUpload = async (file) => {
-        
+        try {
+            const img = await uploadFileToFirebase(file);
+            setFormData({
+                ...formData,
+                image: img
+            });
+            message.success("upload thành công");
+        } catch (error) {
+            message.error('Đã xảy ra lỗi khi tải lên hình ảnh: ' + error);
+        }
     };
 
     const fetchDataCategory = async () => {
@@ -114,7 +124,7 @@ const UpdateProduct = () => {
             <Col xs={24} sm={24} md={24}>
                 <Card title={title}>
                     <Form onFinish={handleSubmit}>
-                    <Form.Item label="Tên sản phẩm" name="name" rules={rules.name} initialValue={formData.name}>
+                        <Form.Item label="Tên sản phẩm" name="name" rules={rules.name} initialValue={formData.name}>
                             <Input placeholder="Tên sản phẩm" value={formData.name} onChange={e => handleChange('name', e.target.value)} />
                         </Form.Item>
                         <Form.Item label="Giá sản phẩm" name="price" rules={rules.price} initialValue={formData.price}>
@@ -123,13 +133,13 @@ const UpdateProduct = () => {
                         <Form.Item label="Mô tả sản phẩm" name="description" rules={rules.description} initialValue={formData.description}>
                             <Input.TextArea rows={4} value={formData.description} onChange={e => handleChange('description', e.target.value)} />
                         </Form.Item>
-                        <Form.Item label="Hình ảnh sản phẩm" name="image" rules={rules.image} >
-                            <Flex gap="middle">
-                                <Upload beforeUpload={handleUpload} showUploadList={false} maxCount={1} >
+                        <Form.Item label="Hình ảnh sản phẩm" name="image" rules={rules.image}>
+                            <Space direction="horizontal" size="middle">
+                                <Upload beforeUpload={handleUpload} showUploadList={false} maxCount={1}>
                                     <Button icon={<UploadOutlined />}>Chọn hình ảnh</Button>
                                 </Upload>
                                 <Input value={formData.image} onChange={e => handleChange('image', e.target.value)} />
-                            </Flex>
+                            </Space>
                         </Form.Item>
                         <Form.Item label="Số lượng sản phẩm" name="ammount" rules={rules.total} initialValue={formData.ammount}>
                             <InputNumber className="w-100" min={0} value={formData.ammount} placeholder="Số lượng sản phẩm" onChange={value => handleChange('ammount', value)} />

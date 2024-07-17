@@ -34,7 +34,7 @@ const AddCategory = () => {
     const handleSubmit = async (event) => {
         fetchData();
         setFormData({
-            namcategoryName: '',
+            categoryName: '',
             description: '',
         });
     };

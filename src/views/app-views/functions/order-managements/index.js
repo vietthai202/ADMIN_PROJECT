@@ -55,7 +55,7 @@ export const OrderManagement = () => {
     }
 
     const confirmOrder = async (id) => {
-        await transactionService.UpdateOrder(id)
+        await transactionService.UpdateOrder(id,1)
             .then((data) => {
                 message.success('Thành công');
                 setAfterUpdate(!afterUpdate);
@@ -90,11 +90,6 @@ export const OrderManagement = () => {
             title: "Khách hàng",
             dataIndex: "userName",
             sorter: (a, b) => utils.antdTableSorter(a, b, "userId"),
-        },
-        {
-            title: "Cân nặng",
-            dataIndex: "freight",
-            sorter: (a, b) => utils.antdTableSorter(a, b, "freight"),
         },
         {
             title: "Địa chỉ nhận hàng",
@@ -153,7 +148,7 @@ export const OrderManagement = () => {
         setLoading(true);
         try {
             const [orderData, userData] = await Promise.all([
-                transactionService.getAllOrders(),
+                transactionService.getAllOrder(0),
                 userService.getAllUser()
             ]);
             const order = orderData;

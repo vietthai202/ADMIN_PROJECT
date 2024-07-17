@@ -80,11 +80,6 @@ export const VipManagement = () => {
             sorter: (a, b) => utils.antdTableSorter(a, b, "userName"),
         },
         {
-            title: "Cân nặng",
-            dataIndex: "freight",
-            sorter: (a, b) => utils.antdTableSorter(a, b, "freight"),
-        },
-        {
             title: "Địa chỉ nhận hàng",
             dataIndex: "shipAddress",
             sorter: (a, b) => utils.antdTableSorter(a, b, "shipAddress"),
@@ -146,7 +141,7 @@ export const VipManagement = () => {
         setLoading(true);
         try {
             const [orderData, userData] = await Promise.all([
-                transactionService.getAllOrder(),
+                transactionService.getAllOrder(1),
                 userService.getAllUser()
             ]);
             const order = orderData;

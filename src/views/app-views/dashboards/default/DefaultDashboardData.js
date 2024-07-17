@@ -20,7 +20,7 @@ while (dateIterator <= currentDate) {
 export const VisitorChartData = async () => {
 	try {
 		const [orderData, orderDetailsData] = await Promise.all([
-			transactionService.getAllOrder(),
+			transactionService.getAllOrder(1),
 			orderSettingService.getAllOrderDetails()
 		]);
 		const orderDataResult = orderData;
@@ -33,13 +33,6 @@ export const VisitorChartData = async () => {
 		const today = new Date();
 		orderDataResult.sort((a, b) => Math.abs(new Date(a.date) - today) - Math.abs(new Date(b.date) - today));
 		orderDetailsResult.sort((a, b) => Math.abs(new Date(a.date) - today) - Math.abs(new Date(b.date) - today));
-
-		const exchangeRate = 23000;
-
-		const convertVNDToUSD = (amountVND) => {
-			const amountUSD = amountVND / exchangeRate;
-			return amountUSD.toFixed(2); 
-		};
 
 		const dataDeposit = (type) => {
 			let closestRecords = [];
@@ -60,7 +53,7 @@ export const VisitorChartData = async () => {
 			});
 			orderRecords.forEach(record => {
 				const dateKey = record.orderDate.substring(0, 10);
-				dailyTotalAmounts[dateKey] += convertVNDToUSD(record.price);
+				dailyTotalAmounts[dateKey] += (record.price);
 			});
 			const seriesData = dateList.map(date => ({
 				date: date,
@@ -109,9 +102,9 @@ const getAnnualStatisticData = async () => {
 			totalPrice += order.price;
 		});
 
-		const formatter = new Intl.NumberFormat('vi-VN', {
+		const formatter = new Intl.NumberFormat('en-US', {
 			style: 'currency',
-			currency: 'VND',
+			currency: 'USD',
 		});
 		const formattedCountTransaction = formatter.format(totalPrice);
 		return [
