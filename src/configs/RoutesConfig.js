@@ -15,9 +15,6 @@ export const protectedRoutes = [
         path: `${APP_PREFIX_PATH}/dashboards/default`,
         component: React.lazy(() => import('views/app-views/dashboards/default/')),
     },
-   
-    
-   
     {
         key: 'functions-product-management',
         path: `${APP_PREFIX_PATH}/functions/product-management`,

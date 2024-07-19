@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Input, Row, Col, Card, Form, InputNumber, message, Select, Button, Upload, Space } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
+import AvatarStatus from 'components/shared-components/AvatarStatus';
 import productService from 'services/ProductService';
 import categoryService from 'services/CategoryService';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -133,19 +134,8 @@ const UpdateProduct = () => {
                         <Form.Item label="Mô tả sản phẩm" name="description" rules={rules.description} initialValue={formData.description}>
                             <Input.TextArea rows={4} value={formData.description} onChange={e => handleChange('description', e.target.value)} />
                         </Form.Item>
-                        <Form.Item label="Hình ảnh sản phẩm" name="image" rules={rules.image}>
-                            <Space direction="horizontal" size="middle">
-                                <Upload beforeUpload={handleUpload} showUploadList={false} maxCount={1}>
-                                    <Button icon={<UploadOutlined />}>Chọn hình ảnh</Button>
-                                </Upload>
-                                <Input value={formData.image} onChange={e => handleChange('image', e.target.value)} />
-                            </Space>
-                        </Form.Item>
                         <Form.Item label="Số lượng sản phẩm" name="ammount" rules={rules.total} initialValue={formData.ammount}>
                             <InputNumber className="w-100" min={0} value={formData.ammount} placeholder="Số lượng sản phẩm" onChange={value => handleChange('ammount', value)} />
-                        </Form.Item>
-                        <Form.Item label="Cân nặng" name="weight" rules={rules.total} initialValue={formData.weight}>
-                            <InputNumber className="w-100" min={0} value={formData.weight} placeholder="Số lượng sản phẩm" onChange={value => handleChange('weight', value)} />
                         </Form.Item>
                         <Form.Item label="Danh mục sản phẩm" rules={rules.category} name="category" initialValue={formData.categoryId}>
                             <Select className="w-100" placeholder="Danh mục sản phẩm" value={formData.categoryId} onChange={value => handleChange('categoryId', value)}>
@@ -155,6 +145,15 @@ const UpdateProduct = () => {
                                     ))
                                 }
                             </Select>
+                        </Form.Item>
+                        <Form.Item label="Hình ảnh sản phẩm" name="image" rules={rules.image}>
+                            <Space direction="horizontal" size="middle">
+                                <AvatarStatus size={60} type='square' src={formData.image} alt={formData.image} />
+                                <Upload beforeUpload={handleUpload} showUploadList={false} maxCount={1}>
+                                    <Button icon={<UploadOutlined />}>Chọn hình ảnh</Button>
+                                </Upload>
+                                <Input value={formData.image} onChange={e => handleChange('image', e.target.value)} />
+                            </Space>
                         </Form.Item>
                         <Button type="primary" htmlType="submit">Cập nhật sản phẩm</Button>
                     </Form>

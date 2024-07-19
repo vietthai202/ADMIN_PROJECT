@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Input, Row, Col, Card, Form, InputNumber, message, Select, Button, Upload, Space } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
+import AvatarStatus from 'components/shared-components/AvatarStatus';
 import productService from 'services/ProductService';
 import categoryService from 'services/CategoryService';
 import { useNavigate } from 'react-router-dom';
@@ -52,6 +53,7 @@ const AddProduct = () => {
         ],
     }
     const navigate = useNavigate();
+    const [image, setImage] = useState();
     const [categories, setCategories] = useState([]);
     const [formData, setFormData] = useState({
         name: '',
@@ -90,6 +92,7 @@ const AddProduct = () => {
                 ...formData,
                 image: img
             });
+            setImage(img);
             message.success("upload thành công");
         } catch (error) {
             message.error('Đã xảy ra lỗi khi tải lên hình ảnh: ' + error);
@@ -134,9 +137,6 @@ const AddProduct = () => {
                         <Form.Item label="Số lượng sản phẩm" name="ammount" rules={rules.total}>
                             <InputNumber className="w-100" min={0} value={formData.ammount} placeholder="Số lượng sản phẩm" onChange={value => handleChange('ammount', value)} />
                         </Form.Item>
-                        <Form.Item label="Cân nặng" name="weight" rules={rules.total}>
-                            <InputNumber className="w-100" min={0} value={formData.weight} placeholder="Số lượng sản phẩm" onChange={value => handleChange('weight', value)} />
-                        </Form.Item>
                         <Form.Item label="Danh mục sản phẩm" rules={rules.category} name="category" >
                             <Select className="w-100" placeholder="Danh mục sản phẩm" value={formData.categoryId} onChange={value => handleChange('categoryId', value)}>
                                 {
@@ -148,6 +148,9 @@ const AddProduct = () => {
                         </Form.Item>
                         <Form.Item label="Hình ảnh sản phẩm" name="imageFile" rules={rules.image}>
                             <Space direction="horizontal" size="middle">
+                                {image && (
+                                    <AvatarStatus size={60} type='square' src={image}  alt={image} />
+                                )}
                                 <Upload beforeUpload={handleUpload} showUploadList={false} maxCount={1}>
                                     <Button icon={<UploadOutlined />}>Chọn hình ảnh</Button>
                                 </Upload>

@@ -1,7 +1,6 @@
 import { Button, Table, Form, Input, Modal, Select, Tag, message } from "antd";
 import { EditOutlined } from '@ant-design/icons';
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import userService from "services/UserService";
 import utils from "utils";
 
@@ -18,17 +17,6 @@ const USER_ROLE = [
   {
     value: 3,
     label: 'STAFF',
-  },
-]
-
-const TYPE = [
-  {
-    value: 'NAPTIEN',
-    label: 'NAPTIEN',
-  },
-  {
-    value: 'RUTTIEN',
-    label: 'RUTTIEN',
   },
 ]
 
@@ -51,9 +39,7 @@ export const UserManagement = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   const [form] = Form.useForm();
-  const [form2] = Form.useForm();
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
-  const [isUpdateBalance, setIsUpdateBalance] = useState(false);
 
   const [userUpdate, setUserUpdate] = useState();
   const [formValue, setFormValue] = useState();
@@ -109,9 +95,7 @@ export const UserManagement = () => {
 
   const cancelUpdate = () => {
     form.resetFields();
-    form2.resetFields();
     setIsUpdateOpen(false);
-    setIsUpdateBalance(false);
   };
 
   const renderRole = (roleValue) => {
@@ -139,7 +123,6 @@ export const UserManagement = () => {
       </Tag>
     );
   };
-
 
   const tableColumns = [
     {
@@ -313,60 +296,6 @@ export const UserManagement = () => {
               </Form.Item>
             </Form>
           }
-        </div>
-      </Modal>
-
-      <Modal
-        destroyOnClose={true}
-        okButtonProps={{ style: { backgroundColor: '#CD1818' } }}
-        title="Thay đối số dư"
-        open={isUpdateBalance}
-        onOk={""}
-        onCancel={cancelUpdate}
-        okText="Thay đổi số dư"
-      >
-        <div className='flex flex-col items-center'>
-          <Form
-            preserve={false}
-            form={form2}
-            name="createForm"
-            layout="vertical"
-            labelCol={{ span: 8 }}
-            initialValues={formValue}
-            autoComplete="off"
-          >
-
-            <div className="balance-label">Số dư hiện tại: {userUpdate?.balance}</div>
-
-            <Form.Item
-              label="Số tiền cần thay đổi"
-              name="amount"
-              min='0'
-              rules={[
-                {
-                  required: true,
-                  message: 'Nhập số tiền cộng'
-                },
-                {
-                  pattern: /^[1-9]\d*$/,
-                  message: 'Số tiền phải lớn hơn 1'
-                }
-              ]}
-            >
-              <Input size="large" placeholder='12321' />
-            </Form.Item>
-
-            <Form.Item
-              label="type"
-              name="type"
-              rules={[{ required: true, message: 'Hãy chọn type' }]}
-            >
-              <Select
-                options={TYPE}
-
-              />
-            </Form.Item>
-          </Form>
         </div>
       </Modal>
     </div>

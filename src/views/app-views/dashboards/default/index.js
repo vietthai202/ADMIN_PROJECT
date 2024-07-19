@@ -6,12 +6,7 @@ import {
   VisitorChartData,
   AnnualStatisticData,
 } from './DefaultDashboardData';
-// import ApexChart from 'react-apexcharts';
 import { useSelector } from 'react-redux';
-
-// const MembersChart = props => (
-//   <ApexChart {...props} />
-// )
 
 export const DefaultDashboard = () => {
   const [visitorChartData, setVisitorChartData] = useState([]);

@@ -1,25 +1,14 @@
-import { Button, Table, Tag, message, Card, Input, Select, Modal } from "antd";
+import { Button, Table, Tag, message, Card, Modal, Input } from "antd";
 import { EditOutlined } from '@ant-design/icons';
 import { useEffect, useState } from "react";
 import formatDate from 'views/app-views/formatDate'
 import { useNavigate } from "react-router-dom";
 import utils from "utils";
-import transactionService from "services/TransactionService";
-import orderSettingService from "services/OrderSettingService";
+import orderService from "services/OrderService";
+import orderDetailService from "services/OrderDetailService";
 import productService from "services/ProductService";
 import userService from "services/UserService";
-
-
-const USER_WITHDRAWAL = [
-    {
-        value: false,
-        label: 'Moving',
-    },
-    {
-        value: true,
-        label: 'Done',
-    },
-]
+import '../../../../index.css'
 
 export const OrderManagement = () => {
     const navigate = useNavigate();
@@ -27,14 +16,18 @@ export const OrderManagement = () => {
     const [loading, setLoading] = useState(true);
     const [list, setList] = useState([]);
     const [listOrder, setListOrder] = useState([]);
+    const [orderData, setOrderData] = useState();
     const [afterUpdate, setAfterUpdate] = useState(true);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+    const [isUpdateOpen, setIsUpdateOpen] = useState(false);
+    const [inputValue, setInputValue] = useState('');
+    const [type, setType] = useState('');
 
-    const buttonDelete = async (id) => {
+    const buttonDelete = async (data) => {
         setIsDeleteOpen(true);
         try {
             const [orderData, productData] = await Promise.all([
-                orderSettingService.getOrderDetailByOrder(id),
+                orderDetailService.getOrderDetailByOrder(data.id),
                 productService.getAllProduct()
             ]);
             const order = orderData;
@@ -54,29 +47,63 @@ export const OrderManagement = () => {
         setIsDeleteOpen(false);
     }
 
-    const confirmOrder = async (id) => {
-        await transactionService.UpdateOrder(id,1)
-            .then((data) => {
-                message.success('Thành công');
-                setAfterUpdate(!afterUpdate);
-                navigate(`/app/functions/order-managements`);
-            })
-            .catch((error) => {
-                message.error('Xảy ra lỗi', error);
-            })
+    const doUpdate = () => {
+        if (orderData) {
+            confirmUpdate(orderData.id, type, inputValue)
+        }
     }
 
-    const renderStatus = (roleValue) => {
-        const role = USER_WITHDRAWAL.find(item => item.value === roleValue);
-        let color = 'green';
-        if (role && role.value === false) {
-            color = 'volcano';
+    const confirmUpdate = async (id, type, comment) => {
+        if (type === 'confirm') {
+            const orderUpdate = orderData;
+            orderUpdate.id = id;
+            orderUpdate.status = 1;
+            await orderService.UpdateOrder(orderUpdate)
+                .then(() => {
+                    message.success('Thành công');
+                    setAfterUpdate(!afterUpdate);
+                    navigate(`/app/functions/order-managements`);
+                })
+                .catch((error) => {
+                    message.error('Xảy ra lỗi', error);
+                })
+        } else {
+            const orderUpdate = orderData;
+            orderUpdate.id = id;
+            orderUpdate.status = 2;
+            orderUpdate.comment = comment;
+            await orderService.UpdateOrder(orderUpdate)
+                .then(() => {
+                    message.success('Thành công');
+                    setAfterUpdate(!afterUpdate);
+                    navigate(`/app/functions/order-managements`);
+                })
+                .catch((error) => {
+                    message.error('Xảy ra lỗi', error);
+                })
         }
-        return (
-            <Tag color={color} key={roleValue}>
-                {role ? role.label : 'Chưa biết'}
-            </Tag>
-        );
+        setIsUpdateOpen(false);
+    }
+
+    const openUpdate = (data, type) => {
+        setIsUpdateOpen(true);
+        setOrderData(data);
+        setType(type);
+    }
+
+    const closeUpdate = () => {
+        setIsUpdateOpen(false);
+    }
+
+    const getStatus = status => {
+        switch (status) {
+            case 1:
+                return 'green';
+            case 2:
+                return 'red';
+            default:
+                return 'yellow';
+        }
     };
 
     const tableColumns = [
@@ -111,49 +138,35 @@ export const OrderManagement = () => {
             title: "Trạng thái đơn",
             dataIndex: "status",
             sorter: (a, b) => utils.antdTableSorter(a, b, "status"),
-            render: renderStatus
+            render: (_, elm) => (
+                <><Tag color={getStatus(elm.status)}>{elm.status === 0 ? 'Chờ xử lý' : 'Không xác định'}</Tag></>
+            ),
         },
         {
             title: "Hành động",
             dataIndex: "actions",
             render: (_, record) => (
                 <div>
-                    <Button classNames="mt-2" danger onClick={() => buttonDelete(record.id)}>
+                    <Button classNames="mt-2" danger onClick={() => buttonDelete(record)}>
                         Thông tin
                     </Button>
-                    <Button className="mt-2 ml-2" icon={<EditOutlined />} type="primary" onClick={(() => confirmOrder(record.id))} >Hoàn thành</Button>
+                    <Button className="mt-2 ml-2" icon={<EditOutlined />} type="primary" onClick={(() => openUpdate(record, 'confirm'))} >Hoàn thành</Button>
+                    <Button className="mt-2 ml-2" danger type="primary" onClick={(() => openUpdate(record, 'refuse'))} >Từ chối</Button>
                 </div>
             ),
         },
     ];
 
-    const tableColumnsOrder = [
-        {
-            title: "Tên sản phẩm",
-            dataIndex: "productName",
-        },
-        {
-            title: "Số lượng",
-            dataIndex: "quantity",
-
-        },
-        {
-            title: "Tổng tiền",
-            dataIndex: "price",
-
-        },
-    ]
-
     const fetchData = async () => {
         setLoading(true);
         try {
             const [orderData, userData] = await Promise.all([
-                transactionService.getAllOrder(0),
+                orderService.getAllOrder(0),
                 userService.getAllUser()
             ]);
             const order = orderData;
             const user = userData;
-            const userMap = new Map(user.map(user => [user.id,user.firstName + ' ' + user.lastName]));
+            const userMap = new Map(user.map(user => [user.id, user.firstName + ' ' + user.lastName]));
             const updatedOrderList = order.map(order => ({
                 ...order,
                 userName: userMap.get(order.userId) || "Unknown"
@@ -186,14 +199,49 @@ export const OrderManagement = () => {
                     title="Thông tin đơn hàng"
                     open={isDeleteOpen}
                     onCancel={cancelDelete}
-
                 >
                     <Table
-                        columns={tableColumnsOrder}
+                        columns={[
+                            {
+                                title: "Tên sản phẩm",
+                                dataIndex: "productName",
+                            },
+                            {
+                                title: "Số lượng",
+                                dataIndex: "quantity",
+                            },
+                            {
+                                title: "Tổng tiền",
+                                dataIndex: "price",
+                            },
+                        ]}
                         dataSource={listOrder}
                         loading={loading}
-                        rowKey='id'
                     />
+
+                </Modal>
+
+                <Modal
+                    okButtonProps={{ style: { backgroundColor: '#CD1818' } }}
+                    title={type === 'confirm' ? 'Chấp nhận đơn hàng' : 'Từ chối đơn hàng'}
+                    open={isUpdateOpen}
+                    onOk={doUpdate}
+                    onCancel={closeUpdate}
+                    okText="Xác nhận"
+                    cancelText="Hủy"
+                >
+                    <div className='flex flex-col items-center'>
+                        {type === 'confirm' ? 'Bạn có chắc chắn xác nhận hoàn thành đơn hàng!' : 'Bạn có chắc chắn muốn từ chối đơn hàng!'}
+                        {type !== 'confirm' && (
+                            <Input
+                                type='text'
+                                value={inputValue}
+                                onChange={(e) => setInputValue(e.target.value)}
+                                placeholder='Nhập lý do từ chối'
+                                className='mt-2 p-2 border rounded'
+                            />
+                        )}
+                    </div>
 
                 </Modal>
             </div>

@@ -1,14 +1,13 @@
 import { Button, Card, Input, Table, message, Modal } from 'antd';
 import { useEffect, useState } from 'react';
 import { DeleteOutlined, PlusCircleOutlined, SearchOutlined, EditOutlined } from '@ant-design/icons';
-import AvatarStatus from 'components/shared-components/AvatarStatus';
 import Flex from 'components/shared-components/Flex';
 import { useNavigate } from "react-router-dom";
 import categoryService from 'services/CategoryService';
 import utils from 'utils';
-import { BACKEND_UPLOAD_URL } from 'constants/ApiConstant';
 const CategoryManagement = () => {
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
     const [list, setList] = useState([])
     const [selectedRows, setSelectedRows] = useState([])
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -104,11 +103,17 @@ const CategoryManagement = () => {
         }
     }
     const fetchData = async () => {
-        await categoryService.getAllCategory().then((data) => {
-            setList(data);
-        }).catch((error) => {
-            console.error("ERROR");
-        })
+        setLoading(true);
+        await categoryService.getAllCategory()
+            .then((data) => {
+                setList(data);
+            })
+            .catch((error) => {
+                console.error("ERROR");
+            })
+            .finally(() => {
+                setLoading(false);
+            })
     }
     useEffect(() => {
         fetchData();
@@ -133,6 +138,7 @@ const CategoryManagement = () => {
                 <Table
                     columns={tableColumns}
                     dataSource={list}
+                    loading ={loading}
                     rowKey='id'
                     rowSelection={{
                         selectedRowKeys: selectedRowKeys,

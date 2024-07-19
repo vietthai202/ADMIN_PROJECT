@@ -1,20 +1,19 @@
 import fetch from 'auth/FetchInterceptor'
 
-const orderSettingService = {}
+const orderDetailService = {}
 
-orderSettingService.getOrderDetailByOrder = function (params) {
+orderDetailService.getOrderDetailByOrder = function (params) {
   return fetch({
     url: '/OrderDetail/GetAllOrderDetail/'+ params,
     method: 'get',
   })
 }
 
-orderSettingService.getAllOrderDetails = function () {
+orderDetailService.getAllOrderDetails = function () {
   return fetch({
     url: '/OrderDetail/GetAllOrderDetails',
     method: 'get',
-    
   })
 }
 
-export default orderSettingService
+export default orderDetailService

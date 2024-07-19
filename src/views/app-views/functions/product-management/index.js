@@ -7,13 +7,14 @@ import NumberFormat from 'react-number-format';
 import { useNavigate } from "react-router-dom";
 import productService from 'services/ProductService';
 import categoryService from 'services/CategoryService';
+import 'index';
 import utils from 'utils';
-import { BACKEND_UPLOAD_URL } from 'constants/ApiConstant';
 const { Option } = Select
 
 
 const ProductManagement = () => {
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
     const [list, setList] = useState([])
     const [categories, setCategories] = useState([])
     const [selectedRows, setSelectedRows] = useState([])
@@ -91,12 +92,12 @@ const ProductManagement = () => {
                 <div>
                     <NumberFormat
                         displayType={'text'}
-                        value={Math.round(price).toLocaleString('vi-VN')}
+                        value={Math.round(price).toLocaleString('en-US')}
                        
                         thousandSeparator={'.'}
                         decimalSeparator={','}
                     />
-                    {'₫'}
+                    {'$'}
                 </div>
             ),
             sorter: (a, b) => utils.antdTableSorter(a, b, 'price')
@@ -104,7 +105,7 @@ const ProductManagement = () => {
         {
             title: 'Số lượng',
             dataIndex: 'ammount',
-            sorter: (a, b) => utils.antdTableSorter(a, b, 'total')
+            sorter: (a, b) => utils.antdTableSorter(a, b, 'ammount')
         },
         {
             title: 'Hành động',
@@ -161,9 +162,8 @@ const ProductManagement = () => {
         }
     };
 
-  
-
     const fetchData = async () => {
+        setLoading(true);
         try {
             const [categoryData, productData] = await Promise.all([
                 categoryService.getAllCategory(),
@@ -180,6 +180,8 @@ const ProductManagement = () => {
             setList(updatedProductList);
         } catch (error) {
             console.error("Error:", error);
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -219,6 +221,7 @@ const ProductManagement = () => {
                 <Table
                     columns={tableColumns}
                     dataSource={list}
+                    loading = {loading}
                     rowKey='id'
                     rowSelection={{
                         selectedRowKeys: selectedRowKeys,

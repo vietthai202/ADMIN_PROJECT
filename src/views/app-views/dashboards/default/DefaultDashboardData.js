@@ -1,6 +1,6 @@
 import userService from 'services/UserService'
-import transactionService from 'services/TransactionService';
-import orderSettingService from 'services/OrderSettingService';
+import orderService from 'services/OrderService';
+import orderDetailService from 'services/OrderDetailService';
 const currentDate = new Date();
 const thirtyDaysAgo = new Date(currentDate);
 thirtyDaysAgo.setDate(currentDate.getDate() - 15);
@@ -20,8 +20,8 @@ while (dateIterator <= currentDate) {
 export const VisitorChartData = async () => {
 	try {
 		const [orderData, orderDetailsData] = await Promise.all([
-			transactionService.getAllOrder(1),
-			orderSettingService.getAllOrderDetails()
+			orderService.getAllOrder(1),
+			orderDetailService.getAllOrderDetails()
 		]);
 		const orderDataResult = orderData;
 		const orderDetailsResult = orderDetailsData;
@@ -34,24 +34,24 @@ export const VisitorChartData = async () => {
 		orderDataResult.sort((a, b) => Math.abs(new Date(a.date) - today) - Math.abs(new Date(b.date) - today));
 		orderDetailsResult.sort((a, b) => Math.abs(new Date(a.date) - today) - Math.abs(new Date(b.date) - today));
 
-		const dataDeposit = (type) => {
-			let closestRecords = [];
-			let orderRecords = [];
+		const revenueData = (type) => {
+			let orderDataRecord = [];
+			let orderDetailDataRecord = [];
 			if (type === 1) {
-				closestRecords = orderDataResult.slice(0, 15);
+				orderDataRecord = orderDataResult.slice(0, 15);
 			} else {
-				orderRecords = orderDetailsResult.slice(0, 15);
+				orderDetailDataRecord = orderDetailsResult.slice(0, 15);
 			}
 
 			const dailyTotalAmounts = {};
 			dateList.forEach(date => {
 				dailyTotalAmounts[date] = 0;
 			});
-			closestRecords.forEach(record => {
+			orderDataRecord.forEach(record => {
 				const dateKey = record.orderDate.substring(0, 10);
 				dailyTotalAmounts[dateKey] += 1;
 			});
-			orderRecords.forEach(record => {
+			orderDetailDataRecord.forEach(record => {
 				const dateKey = record.orderDate.substring(0, 10);
 				dailyTotalAmounts[dateKey] += (record.price);
 			});
@@ -72,11 +72,11 @@ export const VisitorChartData = async () => {
 			series: [
 				{
 					name: "Doanh thu",
-					data: dataDeposit(2)
+					data: revenueData(2)
 				},
 				{
 					name: "Số đơn",
-					data: dataDeposit(1)
+					data: revenueData(1)
 				},
 			],
 			categories: dateList
@@ -89,9 +89,9 @@ export const VisitorChartData = async () => {
 const getAnnualStatisticData = async () => {
 	try {
 		const [orderData, userData, orderDat] = await Promise.all([
-			transactionService.getAllTransaction(),
+			orderService.getAllTransaction(),
 			userService.getCountUser(),
-			orderSettingService.getAllOrderDetails()
+			orderDetailService.getAllOrderDetails()
 		]);
 		const orderDataResult = orderData;
 		const countUser = userData;

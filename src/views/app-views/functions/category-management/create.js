@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Input, Row, Col, Card, Form, message, Button, Upload, Flex } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+import { Input, Row, Col, Card, Form, message, Button } from 'antd';
 import categoryService from 'services/CategoryService';
 import { useNavigate } from 'react-router-dom';
 

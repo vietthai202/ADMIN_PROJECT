@@ -13,14 +13,6 @@ AuthService.login = function (data) {
 	})
 }
 
-AuthService.register = function (data) {
-	return fetch({
-		url: '/auth/register',
-		method: 'post',
-		data: data
-	})
-}
-
 AuthService.logout = function () {
 	return fetch({
 		url: '/User/LogOut',

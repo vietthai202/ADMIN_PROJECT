@@ -1,11 +1,9 @@
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { Alert, Button, Form, Input, message } from 'antd';
-import { motion } from "framer-motion";
+import { Button, Form, Input } from 'antd';
 import PropTypes from 'prop-types';
 import { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import AuthService from 'services/AuthService';
 import {
 	hideAuthMessage,
 	showAuthMessage,
@@ -33,8 +31,8 @@ export const LoginForm = props => {
 	} = props
 
 	const initialCredential = {
-		username: 'abc@gmail.com',
-		password: '123'
+		username: 'vietthai202a@gmail.com',
+		password: '1234'
 	}
 
 	const onLogin = (values) => {
@@ -56,14 +54,6 @@ export const LoginForm = props => {
 
 	return (
 		<>
-			{/* <motion.div
-				initial={{ opacity: 0, marginBottom: 0 }}
-				animate={{
-					opacity: showMessage ? 1 : 0,
-					marginBottom: showMessage ? 20 : 0
-				}}>
-				<Alert type="error" showIcon message={Message}></Alert>
-			</motion.div> */}
 			<Form
 				layout="vertical"
 				name="login-form"

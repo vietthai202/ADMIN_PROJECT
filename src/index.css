@@ -1,0 +1,18 @@
+.blue-button {
+    background-color: #3bbe1a; /* màu xanh */
+    color: white; /* màu chữ trắng */
+    border: none;
+    padding: 10px;
+ 
+}
+
+.wrap {
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+}
+
+.blue-button:hover {
+    background-color: #3bbe1a; /* màu xanh đậm hơn khi hover */
+    color: white !important;
+}
